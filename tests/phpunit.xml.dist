@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+this file is used to set many options for PHPUnit at once. It's main use is
+to supply the location of the bootstrap file to be included on every test,
+so that we dont need to include the bootstrap file on every test.
+-->
+  
+<!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit backupGlobals="true"
+         backupStaticAttributes="false"
+         bootstrap="./BackendProject/BaseTest.php"
+         cacheTokens="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         forceCoversAnnotation="false"
+         mapTestClassNameToCoveredClassName="false"
+         printerClass="PHPUnit_TextUI_ResultPrinter"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader"
+         strict="false"
+         verbose="false">
+	<testsuites>
+		<testsuite name="Project Test Suite">
+			<directory>./*</directory>
+		</testsuite>
+	</testsuites>
+	<php>
+		<ini name="memory_limit" value="128M" />
+	</php>
+</phpunit>

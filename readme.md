@@ -41,11 +41,27 @@ This project is licensed under the Apache License Version 2.0.  The software
 can be used freely, but is provided on an "as-is" basis and comes with no 
 warranties.
 
+#Requirements#
+This project will work on PHP version 5.3+. It will work primarily on Linux
+platforms; it may also work on MS Windows.
+
+#Installation#
+backend_project can be easily installed via Composer; just add a new require
+and run composer install.
+
+``
+{
+    "require": {
+        "robertop/backend_project": "*"
+    }
+}
+``
+
 #FAQ#
 1. I already use the Symfony Console. Why should I use backend_project?
    Symfony is tailored for web applications, while backend_project is tailored 
    for background processes. backend_project provides many features helpful for
-   writing those background processes that Symfony does not.
+   writing background processes that Symfony does not.
 
 2. How difficult is it to integrate backend_project into my existing scripts?
    backend_project is not an application container of any sort; it has no 
