@@ -34,8 +34,9 @@ class WritableFileSystemPreCondition extends PreCondition {
 	/**
 	 *
 	 * @param $fullPath string the path to check. It may be either a file or a 
-	 *        directory, but should be a full path. Note that symbolic links are 
-	 *        NOT followed, so this check may not fail with symlinks.
+	 *        directory, but should be a full path. Note that it is safe
+	 *        to pass a symbolic link, the check will properly determine if
+	 *        the file that is linked to is writable.
 	 */
 	public function __construct($fullPath) {
 		$this->fullPath = $fullPath;
