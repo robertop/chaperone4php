@@ -1,0 +1,19 @@
+#
+# configuration file for phinx
+# phinx is the database migration tool that is used for
+# the tests
+#
+paths:
+    migrations: %%PHINX_CONFIG_DIR%%/migrations
+
+environments:
+    default_migration_table: phinxlog
+    default_database: testing
+    testing:
+        adapter: mysql
+        host: localhost
+        name: backendProjectTest
+        user: root
+        pass: ''
+        port: 3306
+        charset: utf8

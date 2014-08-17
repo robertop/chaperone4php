@@ -16,7 +16,12 @@
  */
 
 // setup the autoloader to find all of the classes we intend to test
-$strRootPath = dirname(__FILE__) . '/../..';
+// also, add the test directory to the autoload paths so that classes
+// used in testing are autoloaded as well.
+$strRootPath = __DIR__ . '/../';
 $objLoader = require $strRootPath . '/vendor/autoload.php';
+$objLoader->add("", array(
+	$strRootPath . '/tests'
+));
 
-require_once('BaseTest.php');
+require_once(__DIR__ . '/BackendProject/BaseTest.php');
