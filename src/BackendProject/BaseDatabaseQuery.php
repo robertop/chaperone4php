@@ -23,7 +23,29 @@ namespace BackendProject;
  * be run as well as the variables that it needs to bind; the Base
  * class will prepare the query, bind the variables, and iterate through
  * the result set.
- * 
+ *
+ * Usage:
+ * - Create a class that inherits from BaseDatabaseQuery
+ * - The sub-class should have 1 public property for each column in
+ *   th result set.
+ * - Instantiate an object of the sub-class type, 
+ * - Call initSql() to define the query being executed and the query
+ *   parameters
+ * - Call prepare() to execute the query
+ * - Call fetch() repeatedly to iterate through the result set
+ * - Access result set values via the public properties of the sub-class object
+ *
+ * See docs/04-bulk-operations.md for more info.
+ *
+ * Notes about result set column binding:
+ *
+ * - the name of the column and the name of the PHP property must match exactly
+ *   (case-sensitive)
+ * - SQL column aliases are supported
+ * - SQL fully qualified columns are supported; when used the PHP property
+ *   must match the SQL column name
+ * - If no columns could be bound (because no properties matched column names) 
+ *   a PHP assertion will be triggered.
  */
 class BaseDatabaseQuery {
 
@@ -52,9 +74,13 @@ class BaseDatabaseQuery {
 	
 	/**
 	 * Set the query to be execute and the parameters to bind to the 
-	 * statement.
+	 * statement. The rules for binding parameters are exactly the same as
+	 * those for PDO::prepare() and PDOStatement::execute(), see the PHP docs at 
+	 * http://php.net/manual/en/pdo.prepare.php and
+	 * http://php.net/manual/en/pdostatement.execute.php
 	 *
-	 * @param string $sql the statement to execute.
+	 * @param string $sql the statement to execute. This MUST be a SELECT
+	 *        statement. No other SQL queries are supported (INSERT, DELETE)
 	 * @params array $queryParams associative array of parameters to bind to
 	 *         the query.
 	 */
@@ -66,8 +92,26 @@ class BaseDatabaseQuery {
 	/**
 	 * Prepares the query to be executed, executes the query, and binds
 	 * columns of the result set to PHP variables. By default, columns
-	 * of the result set are bound to public members of this instance.
+	 * of the result set are bound to public members of this instance. 
 	 *
+	 * As an example, let's say you want to run this query:
+	 *
+	 * SELECT
+	 *    first_name, last_name, zip_code
+	 * FROM
+	 *    users u JOIN user_addresses a ON(u.user_id = a.user_id)
+	 *
+	 * When this method is executed, the result set bindings will be as 
+	 * follows:
+	 *
+	 * first_name ==> $this->first_name
+	 * last_name ==> $this->last_name
+	 * zip_code ==> $this->zip_code
+	 *
+	 * The properties MUST exist before this method is called.
+	 *
+	 * @param \PDO $pdo the connection to execute the query on.  The last
+	 *         query given to the initSql() method will be executed.
 	 * @return bool TRUE if the query was valid AND was executed.
 	 */
 	public function prepare(\PDO $pdo) {
@@ -75,33 +119,56 @@ class BaseDatabaseQuery {
 			'initSql() must be used to set the query to be executed'
 		);
 		$sql = $this->sql;
-		$this->stmt = $pdo->prepare($sql);
-		
-		// according to PHP docs, we must call execute() before we
-		// bind the result set 
-		$queryParams = $this->queryParams;
-		$success = $this->stmt->execute($queryParams);
-		if ($success) {
-			$this->bindColumns($sql);
+		$success = FALSE;
+		$this->stmt = NULL;
+		if ($sql) {
+			$this->stmt = $pdo->prepare($sql);
+			
+				// according to PHP docs, we must call execute() before we
+			// bind the result set 
+			$queryParams = $this->queryParams;
+			$success = $this->stmt->execute($queryParams);
+			if ($success) {
+				$this->bindColumns($sql);
+			}
 		}
 		return $success;
 	}
 	
 	/**
 	 * iterate to the next record of the result set. After a call to this
-	 * method, the bound parameters will have new values.
+	 * method, the PHP variables bound to the result set columns
+	 * will have new values.
+	 *
+	 * @return bool TRUE if a new row was fetched (PHP variables were updated).
 	 */
 	public function fetch() {
 		assert('$this->stmt != NULL',
 			'A valid query must be executed before calling the fetch() method'
 		);
+		if (!$this->stmt) {
+			return FALSE;
+		}
 		return $this->stmt->fetch(\PDO::FETCH_BOUND);
+	}
+	
+	/**
+	 * close the result set cursor manually. This often is not necessary, it 
+	 * is needed only if not all of the rows of the result set are fetched.
+	 *
+	 * See http://php.net/manual/en/pdostatement.closecursor.php
+	 */
+	public function closeCursor() {
+		if ($this->stmt) {
+			$this->stmt->closeCursor();
+		}
 	}
 		
 	/**
 	 * The default, simple way of binding columns to this object.  The query
 	 * is parsed, and when a SELECT column has the same name as a property
-	 * name of this object, then that property will be bound to the column.
+	 * name of this object, then that property will be bound to the column. 
+	 * Column aliases and fully qualified column names are taken into account.
 	 *
 	 * @param string $sql the SQL that is being executed
 	 */
@@ -177,9 +244,9 @@ class BaseDatabaseQuery {
 	 * The default method of binding a SQL result column to a PHP variable.
 	 * The parameter will be bound as a string parameter.
 	 *
-	 * @param \PDOStatement $stmt the statement 
+	 * @param \PDOStatement $stmt the statement being executed
 	 * @param int $colNumber the index of the column in the SELECT clause. This
-	 *        number is 1-based.
+	 *        number should be 1-based.
 	 * @param string $colName the name of the column, as it was in the SELECT
 	 *        clause
 	 */
