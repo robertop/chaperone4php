@@ -17,8 +17,8 @@
 
 /**
  * This file is a manual test that exercises the database loader. It's purpose
- * is so that we can run loader against a huge number of records to
- * test database loader's memory usage.
+ * is so that we can run the database loader against a huge number of records to
+ * test the loader's memory usage.
  */
 
 require_once(__DIR__ . '/../../vendor/autoload.php');
