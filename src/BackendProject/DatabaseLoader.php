@@ -185,15 +185,14 @@ class DatabaseLoader {
 	 * Performs the actual inserts into the database.
 	 *
 	 * @var \PDO $pdo the database connection
-	 * @return bool TRUE if the statement completed successfully. Note that TRUE
-	 *         does not necessarily mean that any records were actually
-	 *         added to the table.
-	 *         This method will return FALSE if no rows were added vi
+	 * @return int the number of records that were added, as reported by 
+	 *         the database driver. 
+	 *         This method will return -1 if no rows were added via
 	 *         the add() method.
 	 */
 	public function commit(\PDO $pdo) {
 		if (!$this->hasAdded) {
-			return FALSE;
+			return -1;
 		}
 		
 		// close the file so that mysql can read it in
@@ -212,10 +211,9 @@ class DatabaseLoader {
 		);
 		$result = $pdo->exec($sql);
 		
-		
 		// cleanup files
 		unlink($this->tmpFile);
 		
-		return $result !== FALSE;
+		return $result;
 	}
 }

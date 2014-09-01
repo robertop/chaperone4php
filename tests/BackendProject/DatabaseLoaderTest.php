@@ -64,8 +64,8 @@ class DatabaseLoaderTest extends BaseTest {
 		$good = $this->loader->init('users', $this->userColumns);
 		$this->assertTrue($good);
 		
-		$good = $this->loader->commit($this->pdo());
-		$this->assertFalse($good);
+		$numberAdded = $this->loader->commit($this->pdo());
+		$this->assertEquals(-1, $numberAdded);
 	}
 	
 	function testCommitSingleRow() {
@@ -78,8 +78,8 @@ class DatabaseLoaderTest extends BaseTest {
 		$good = $this->loader->add($this->user);
 		$this->assertTrue($good);
 		
-		$good = $this->loader->commit($this->pdo());
-		$this->assertTrue($good);
+		$numberAdded = $this->loader->commit($this->pdo());
+		$this->assertEquals(1, $numberAdded);
 		$this->assertSingleUserSaved();
 	}
 	
@@ -95,8 +95,8 @@ class DatabaseLoaderTest extends BaseTest {
 		$good = $this->loader->add($this->user);
 		$this->assertTrue($good);
 		
-		$good = $this->loader->commit($this->pdo());
-		$this->assertTrue($good);
+		$numberAdded = $this->loader->commit($this->pdo());
+		$this->assertEquals(1, $numberAdded);
 		$this->assertSingleUserSaved();
 	}
 	
@@ -112,8 +112,8 @@ class DatabaseLoaderTest extends BaseTest {
 		$good = $this->loader->add($this->user);
 		$this->assertTrue($good);
 		
-		$good = $this->loader->commit($this->pdo());
-		$this->assertTrue($good);
+		$numberAdded = $this->loader->commit($this->pdo());
+		$this->assertEquals(1, $numberAdded);
 		$this->assertSingleUserSaved();
 	}
 	
@@ -136,8 +136,8 @@ class DatabaseLoaderTest extends BaseTest {
 		$good = $this->loader->add($this->user);
 		$this->assertTrue($good);
 		
-		$good = $this->loader->commit($this->pdo());
-		$this->assertTrue($good);
+		$numberAdded = $this->loader->commit($this->pdo());
+		$this->assertEquals(2, $numberAdded);
 		
 		// make sure both users have been added
 		$sql = 'SELECT * FROM users ORDER BY username';
@@ -174,6 +174,10 @@ class DatabaseLoaderTest extends BaseTest {
 		
 	}
 	
+	/**
+	 * queries the database, loads the user record and asserts that
+	 * the database column values match the user object
+	 */
 	private function assertSingleUserSaved() {
 	
 		// now make sure that the database table contains 
