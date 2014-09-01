@@ -110,21 +110,39 @@ class BaseDatabaseQuery {
 	 *
 	 * The properties MUST exist before this method is called.
 	 *
+	 * The query can executed as an unbuffered query, but this will require 
+	 * that the MYSQL_ATTR_USE_BUFFERED_QUERY on the given PDO connection be
+	 * set to FALSE.  There are a couple of points to be aware of when
+	 * using unbuffered queries.
+	 * 
+	 * 1. The upside is that large result sets will maintain constant memory 
+	 *    usage, even very large result sets (1000+)
+	 * 2. The downside is that no other queries can be executed on the
+	 *    given PDO connection until all of the result rows has been
+	 *    fetched.
+	 *
+	 * Given these parameters, it is up to you if you choose to turn off
+	 * buffered queries. This library does not impose that choice.
+	 *
+	 * See http://php.net/manual/en/mysqlinfo.concepts.buffering.php 
+	 * for more info on unbuffered queries
+	 *
 	 * @param \PDO $pdo the connection to execute the query on.  The last
-	 *         query given to the initSql() method will be executed.
+	 *         query given to the initSql() method will be executed. The
+	 *         connection may have the attribute MYSQL_ATTR_USE_BUFFERED_QUERY
+	 *         set to FALSE in order for the queries to run unbuffered and
+	 *         be more memory-effificent.
 	 * @return bool TRUE if the query was valid AND was executed.
 	 */
 	public function prepare(\PDO $pdo) {
-		assert('strlen($this->sql) > 0', 
-			'initSql() must be used to set the query to be executed'
-		);
+		assert('strlen($this->sql) > 0');
 		$sql = $this->sql;
 		$success = FALSE;
 		$this->stmt = NULL;
 		if ($sql) {
 			$this->stmt = $pdo->prepare($sql);
 			
-				// according to PHP docs, we must call execute() before we
+			// according to PHP docs, we must call execute() before we
 			// bind the result set 
 			$queryParams = $this->queryParams;
 			$success = $this->stmt->execute($queryParams);
@@ -139,17 +157,23 @@ class BaseDatabaseQuery {
 	 * iterate to the next record of the result set. After a call to this
 	 * method, the PHP variables bound to the result set columns
 	 * will have new values.
+	 * After the last result set row is fetched, the statement cursor will
+	 * be closed.
 	 *
 	 * @return bool TRUE if a new row was fetched (PHP variables were updated).
 	 */
 	public function fetch() {
-		assert('$this->stmt != NULL',
-			'A valid query must be executed before calling the fetch() method'
-		);
+		assert('$this->stmt != NULL');
 		if (!$this->stmt) {
 			return FALSE;
 		}
-		return $this->stmt->fetch(\PDO::FETCH_BOUND);
+		$hasMore = $this->stmt->fetch(\PDO::FETCH_BOUND);
+		if (!$hasMore) {
+			
+			// time to close the result set
+			$this->closeCursor();
+		}
+		return $hasMore;
 	}
 	
 	/**
@@ -161,6 +185,7 @@ class BaseDatabaseQuery {
 	public function closeCursor() {
 		if ($this->stmt) {
 			$this->stmt->closeCursor();
+			$this->stmt = NULL;
 		}
 	}
 		
@@ -233,11 +258,7 @@ class BaseDatabaseQuery {
 				}
 			}
 		}
-		assert('$colNumber > 1',
-			'no properties were bound to the statement. You must have at ' .
-			'least 1 property that has the same name as a column name in the ' .
-			'query'
-		);
+		assert('$colNumber > 1');
 	}
 	
 	/**
@@ -252,10 +273,7 @@ class BaseDatabaseQuery {
 	 */
 	protected function bindResultColumn(\PDOStatement $stmt, $colNumber, 
 			$colName) {
-		assert('property_exists($this, $colName)',
-			"by default, this instance must have a property named {$colName} " .
-			"so that the column may be bound to it"
-		);
+		assert('property_exists($this, $colName)');
 		$stmt->bindColumn($colNumber, $this->{$colName});
 	}
 

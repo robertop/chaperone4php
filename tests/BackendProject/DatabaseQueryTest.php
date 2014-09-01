@@ -26,10 +26,8 @@ class DatabaseQueryTest extends BaseTest {
 	private $query;
 
 	public function setup() {
-		$this->query = new SelectDatabaseQuery();
+		$this->query = new UsersSelectDatabaseQuery();
 		
-		// add properties dynamically so that they can be bound
-		// to the result set columns. 
 		$this->query->username = '';
 		$this->query->password = '';
 		$this->query->password_salt = '';

@@ -16,6 +16,18 @@
  */
 namespace BackendProject;
 
-class SelectDatabaseQuery extends BaseDatabaseQuery {
+/**
+ * This class represents rows from the `users` table as defined in the
+ * database migrations.
+ */
+class UsersSelectDatabaseQuery extends BaseDatabaseQuery {
 
+	public $username;
+	public $first_name;
+	public $last_name;
+	public $email;
+	public $password;
+	public $password_salt;
+	public $created;
+	public $udpated;
 }

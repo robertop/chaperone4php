@@ -154,8 +154,7 @@ class DatabaseLoader {
 	 */
 	public function add($item) {
 		$added = FALSE;
-		assert('$this->tmpFile', 
-			'DatabaseLoaded::init() must be called before adding rows');
+		assert('$this->tmpFile');
 		if (!$this->tmpFile) {
 			return $added;
 		}
