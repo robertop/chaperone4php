@@ -2,10 +2,10 @@
 #pre-conditions#
 * low disk space
 * low memory available
-* existance / writable directories
 * DB connectivity
 * network access
 * script instances (pid files)
+* load average
 
 #post-conditions#
 * warn on approach to memory_limit
@@ -14,9 +14,7 @@
 
 
 #bulk operations#
-* bulk loading with low memory consumption
 * bulk loading with automatic record paging
-* bulk saving
 * bulk HTTP calls (curl-multi)
 
 #logging#
@@ -33,3 +31,6 @@
 * signal handling: safely handle process termination by completing
   transactions
 * easy integration with rabbit mq / gearman
+
+#calling other processes#
+* exec, system calls record exit code
