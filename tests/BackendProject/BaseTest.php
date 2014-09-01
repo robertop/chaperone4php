@@ -21,4 +21,31 @@ namespace BackendProject;
  */
 abstract class BaseTest extends \PHPUnit_Framework_TestCase {
 
+	/**
+	 * The connection to use
+	 */
+	private $pdo;
+	
+	protected function pdo() {
+		if ($this->pdo) {
+			return $this->pdo;
+		}
+		
+		$configFile = __DIR__ . '/../phinx.yml';
+		$config = \Phinx\Config\Config::fromYaml($configFile);
+		$dbCconfig = $config->getEnvironment('testing');
+		
+		$dsn = $dbCconfig['adapter'] . ':' . 
+			'host=' . $dbCconfig['host'] .
+			';dbname=' . $dbCconfig['name'];
+		
+		$this->pdo = new \PDO($dsn, $dbCconfig['user'], $dbCconfig['pass'],
+			array(\PDO::MYSQL_ATTR_LOCAL_INFILE => '1'));
+		return $this->pdo;
+	}
+	
+	protected function truncate($table) {
+		$pdo = $this->pdo();
+		$pdo->exec('TRUNCATE TABLE '. $table);
+	}
 }

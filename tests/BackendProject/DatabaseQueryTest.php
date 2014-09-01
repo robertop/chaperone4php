@@ -24,11 +24,6 @@ class DatabaseQueryTest extends BaseTest {
 	 * @var BaseDatabaseQuery
 	 */
 	private $query;
-	
-	/**
-	 * The connection to use
-	 */
-	private $pdo;
 
 	public function setup() {
 		$this->query = new SelectDatabaseQuery();
@@ -260,23 +255,6 @@ class DatabaseQueryTest extends BaseTest {
 		$this->assertFalse($success);
 	}
 	
-	private function pdo() {
-		if ($this->pdo) {
-			return $this->pdo;
-		}
-		
-		$configFile = __DIR__ . '/../phinx.yml';
-		$config = \Phinx\Config\Config::fromYaml($configFile);
-		$dbCconfig = $config->getEnvironment('testing');
-		
-		$dsn = $dbCconfig['adapter'] . ':' . 
-			'host=' . $dbCconfig['host'] .
-			';dbname=' . $dbCconfig['name'];
-		
-		$this->pdo = new \PDO($dsn, $dbCconfig['user'], $dbCconfig['pass']);
-		return $this->pdo;
-	}
-	
 	private function insertUser($firstName, $lastName, $password) {
 		$sql = 'INSERT INTO users(' .
 			'username, password, password_salt, email, first_name, ' .
@@ -297,10 +275,5 @@ class DatabaseQueryTest extends BaseTest {
 			$lastName
 		));
 		
-	}
-	
-	private function truncate($table) {
-		$pdo = $this->pdo();
-		$pdo->exec('TRUNCATE TABLE '. $table);
 	}
 }
