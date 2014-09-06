@@ -2,6 +2,7 @@
 #pre-conditions#
 * low disk space
 * low memory available
+* (DONE) existance / writable directories
 * DB connectivity
 * network access
 * script instances (pid files)
@@ -12,9 +13,10 @@
 * warn on low disk space
 * warn on script duration
 
-
 #bulk operations#
+* (DONE) bulk loading with low memory consumption
 * bulk loading with automatic record paging
+* (DONE) bulk saving
 * bulk HTTP calls (curl-multi)
 
 #logging#
