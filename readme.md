@@ -14,6 +14,10 @@ until something goes wrong. Also, there is a cost-benefit analysis that us
 developers do internally; we usually won't bother coding around scenarios that 
 are highly unlikely (low disk space, no network access).
 
+#Status#
+Chaperone4php is in active development, focusing on its first release. See 
+doc/99-roadmap.md for details and progress.
+
 #Why do I need it?#
 Chaperone4php provides you with the following:
 
