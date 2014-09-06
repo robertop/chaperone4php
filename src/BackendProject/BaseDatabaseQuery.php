@@ -43,7 +43,7 @@ namespace BackendProject;
  *   (case-sensitive)
  * - SQL column aliases are supported
  * - SQL fully qualified columns are supported; when used the PHP property
- *   must match the SQL column name
+ *   must match the SQL (unqualified) column name
  * - If no columns could be bound (because no properties matched column names) 
  *   a PHP assertion will be triggered.
  */
@@ -121,7 +121,7 @@ class BaseDatabaseQuery {
 	 *    given PDO connection until all of the result rows has been
 	 *    fetched.
 	 *
-	 * Given these parameters, it is up to you if you choose to turn off
+	 * Given these parameters, it is up to you to choose to turn off
 	 * buffered queries. This library does not impose that choice.
 	 *
 	 * See http://php.net/manual/en/mysqlinfo.concepts.buffering.php 
