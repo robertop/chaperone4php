@@ -14,14 +14,14 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace BackendProject;
+namespace Chaperone4php;
 
 class DatabaseLoaderTest extends BaseTest {
 
 	/**
 	 * The object under test
 	 *
-	 * @var \BackendProject\DatabaseLoader
+	 * @var \Chaperone4php\DatabaseLoader
 	 */
 	private $loader;
 	
@@ -36,7 +36,7 @@ class DatabaseLoaderTest extends BaseTest {
 	private $userColumns;
 	
 	protected function setUp() {
-		$this->loader = new \BackendProject\DatabaseLoader();
+		$this->loader = new \Chaperone4php\DatabaseLoader();
 		$this->truncate('users');
 		
 		$this->user = new \stdClass();

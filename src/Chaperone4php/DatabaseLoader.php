@@ -14,7 +14,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace BackendProject;
+namespace Chaperone4php;
 
 /**
  * A DatabaseLoader is a class that helps with bulk inserting (loading) a

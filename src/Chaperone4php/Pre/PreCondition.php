@@ -14,7 +14,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace BackendProject\Pre;
+namespace Chaperone4php\Pre;
 
 /**
  * A Pre Condition is a class that encapsulates some checks to be done before

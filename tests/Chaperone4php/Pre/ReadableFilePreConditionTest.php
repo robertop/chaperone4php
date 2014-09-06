@@ -14,15 +14,15 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace BackendProject\Pre;
+namespace Chaperone4php\Pre;
 
-use BackendProject\BaseTest;
+use Chaperone4php\BaseTest;
 
 class ReadableFilePreConditionTest extends BaseTest {
 
 	/**
 	 * The object under test
-	 * \BackendProject\Pre\ReadableFilePrecondition
+	 * \Chaperone4php\Pre\ReadableFilePrecondition
 	 */
 	private $condition;
 	
@@ -31,7 +31,7 @@ class ReadableFilePreConditionTest extends BaseTest {
 		// test that the check fails when we give
 		// a directory
 		$this->condition = new 
-			\BackendProject\Pre\ReadableFilePreCondition(__DIR__);
+			\Chaperone4php\Pre\ReadableFilePreCondition(__DIR__);
 		$this->assertFalse($this->condition->check());
 	}
 	
@@ -50,7 +50,7 @@ class ReadableFilePreConditionTest extends BaseTest {
 			$hostsFile = '/etc/hosts';
 		}
 		$this->condition = new 
-			\BackendProject\Pre\ReadableFilePreCondition($hostsFile);
+			\Chaperone4php\Pre\ReadableFilePreCondition($hostsFile);
 		$this->assertTrue($this->condition->check());
 	}
 	
@@ -61,7 +61,7 @@ class ReadableFilePreConditionTest extends BaseTest {
 		// when a non-existant file
 		$file = sys_get_temp_dir() . '/adadadadadqwrrr';
 		$this->condition = new 
-			\BackendProject\Pre\ReadableFilePreCondition($file);
+			\Chaperone4php\Pre\ReadableFilePreCondition($file);
 		$this->assertFalse($this->condition->check());
 	}	
 }

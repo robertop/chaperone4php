@@ -1,7 +1,7 @@
-backend_project 
+Chaperone4php 
 ---------------
 
-backend_project is a simple framework for writing unattended processes in PHP 
+Chaperone4php is a simple framework for writing unattended processes in PHP 
 (scripts run by cron or some other scheduler).  Think of it as the equivalent of 
 Symfony or Laravel but focused strictly on unattended processes.
 
@@ -15,7 +15,7 @@ developers do internally; we usually won't bother coding around scenarios that
 are highly unlikely (low disk space, no network access).
 
 #Why do I need it?#
-backend_project provides you with the following:
+Chaperone4php provides you with the following:
 
 1. a robust set of "pre-conditions"; checks done on script dependencies.  For 
 example, checks to make sure a directory is writable, whether the script can 
@@ -29,8 +29,8 @@ in a fast manner.
 3. A sane logging methodology that gives you visibility into your processes, yet
 won't spam you when things are going ok.
 
-#What backend_project isn't#
-backend_project is NOT
+#What Chaperone4php isn't#
+Chaperone4php is NOT
 
 * a replacement for CRON
 * a message queue, or message broker
@@ -46,26 +46,26 @@ This project will work on PHP version 5.3+. It will work primarily on Linux
 platforms; it may also work on MS Windows.
 
 #Installation#
-backend_project can be easily installed via Composer; just add a new require
+Chaperone4php can be easily installed via Composer; just add a new require
 and run composer install.
 
 ``
 {
     "require": {
-        "robertop/backend_project": "*"
+        "robertop/chaperone4php": "*"
     }
 }
 ``
 
 #FAQ#
-1. I already use the Symfony Console. Why should I use backend_project?
-   Symfony is tailored for web applications, while backend_project is tailored 
-   for background processes. backend_project provides many features helpful for
+1. I already use the Symfony Console. Why should I use Chaperone4php?
+   Symfony is tailored for web applications, while Chaperone4php is tailored 
+   for background processes. Chaperone4php provides many features helpful for
    writing background processes that Symfony does not.
 
-2. How difficult is it to integrate backend_project into my existing scripts?
-   backend_project is not an application container of any sort; it has no 
+2. How difficult is it to integrate Chaperone4php into my existing scripts?
+   Chaperone4php is not an application container of any sort; it has no 
    bootstrapping other than requiring an autoloader which is already provided
    by Composer. Just start using the provided objects as desired! You can
-   integrate as much or as little of backend_project into your apps as you
+   integrate as much or as little of Chaperone4php into your apps as you
    desire.

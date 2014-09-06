@@ -94,7 +94,7 @@ if ($doTruncate) {
 // added to a temp file.
 $start = microtime(TRUE);
 
-$loader = new \BackendProject\DatabaseLoader();
+$loader = new \Chaperone4php\DatabaseLoader();
 $loader->init('users', array(
 	'username',
 	'first_name',

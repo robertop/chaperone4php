@@ -4,7 +4,7 @@ combination of SQL tables.  Often times we just use the ORM that comes with the
 PHP framework that we are using; that is fine until the need arises to handle
 thousands of records in an efficient manner.  ORMs do not make it easy to
 handle SELECTs of thousands of rows because of the "hydration" process; mapping
-columns in result set to PHP variables.  BackendProject comes with a 
+columns in result set to PHP variables.  Chaperone4php comes with a 
 BaseDatabaseQuery class that allows you to easily define queries that allow
 iterating through results in an efficient manner.
 

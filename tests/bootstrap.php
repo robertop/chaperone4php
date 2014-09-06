@@ -24,4 +24,4 @@ $objLoader->add("", array(
 	$strRootPath . '/tests'
 ));
 
-require_once(__DIR__ . '/BackendProject/BaseTest.php');
+require_once(__DIR__ . '/Chaperone4php/BaseTest.php');

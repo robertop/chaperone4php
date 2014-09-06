@@ -14,15 +14,15 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace BackendProject\Pre;
+namespace Chaperone4php\Pre;
 
-use BackendProject\BaseTest;
+use Chaperone4php\BaseTest;
 
 class WritableFileSystemPreConditionTest extends BaseTest {
 
 	/**
 	 * The object under test
-	 * \BackendProject\Pre\WritableFileSystemPrecondition
+	 * \Chaperone4php\Pre\WritableFileSystemPrecondition
 	 */
 	private $condition;
 	
@@ -32,7 +32,7 @@ class WritableFileSystemPreConditionTest extends BaseTest {
 		// a file that is writable
 		// we test our selves, it must be writable, amirite?
 		$this->condition = new 
-			\BackendProject\Pre\WritableFileSystemPreCondition(__FILE__);
+			\Chaperone4php\Pre\WritableFileSystemPreCondition(__FILE__);
 		$this->assertTrue($this->condition->check());
 	}
 	
@@ -42,7 +42,7 @@ class WritableFileSystemPreConditionTest extends BaseTest {
 		// a directory that is writable
 		// we test our directory, it must be writable, amirite?
 		$this->condition = new 
-			\BackendProject\Pre\WritableFileSystemPreCondition(__DIR__);
+			\Chaperone4php\Pre\WritableFileSystemPreCondition(__DIR__);
 		$this->assertTrue($this->condition->check());
 	}
 	
@@ -61,7 +61,7 @@ class WritableFileSystemPreConditionTest extends BaseTest {
 			$hostsFile = '/etc/hosts';
 		}
 		$this->condition = new 
-			\BackendProject\Pre\WritableFileSystemPreCondition($hostsFile);
+			\Chaperone4php\Pre\WritableFileSystemPreCondition($hostsFile);
 		$this->assertFalse($this->condition->check());
 	}
 	
@@ -95,7 +95,7 @@ class WritableFileSystemPreConditionTest extends BaseTest {
 		
 		// now check that the link is marked as "not writable"
 		$this->condition = new 
-			\BackendProject\Pre\WritableFileSystemPreCondition($hostsFile);
+			\Chaperone4php\Pre\WritableFileSystemPreCondition($hostsFile);
 		$this->assertFalse($this->condition->check());
 		
 		// remove the one created by ln -s
@@ -117,7 +117,7 @@ class WritableFileSystemPreConditionTest extends BaseTest {
 			$hostsFile = '/etc';
 		}
 		$this->condition = new 
-			\BackendProject\Pre\WritableFileSystemPreCondition($hostsFile);
+			\Chaperone4php\Pre\WritableFileSystemPreCondition($hostsFile);
 		$this->assertFalse($this->condition->check());
 	}
 	
@@ -127,7 +127,7 @@ class WritableFileSystemPreConditionTest extends BaseTest {
 		// when a non-existant file
 		$file = sys_get_temp_dir() . '/adadadadadqwrrr';
 		$this->condition = new 
-			\BackendProject\Pre\WritableFileSystemPreCondition($file);
+			\Chaperone4php\Pre\WritableFileSystemPreCondition($file);
 		$this->assertFalse($this->condition->check());
 	}	
 }

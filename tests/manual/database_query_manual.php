@@ -89,7 +89,7 @@ $start = microtime(TRUE);
 
 // perform some arbritrary calculation on the users.
 // we check which users' last names start the letter 'p'
-$query = new \BackendProject\UsersSelectDatabaseQuery();
+$query = new \Chaperone4php\UsersSelectDatabaseQuery();
 $sql = <<<SQL
 	SELECT username, email, first_name, last_name, created, updated
 	FROM users

@@ -14,7 +14,7 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-namespace BackendProject;
+namespace Chaperone4php;
 
 /**
  * This class represents rows from the `users` table as defined in the

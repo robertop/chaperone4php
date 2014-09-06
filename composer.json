@@ -1,9 +1,9 @@
 {
-	"name": "robertop/backend_project",
+	"name": "robertop/chaperone4php",
 	"type": "library",
-	"description": "backend_project is a simple framework for writing unattended processes in PHP",
+	"description": "chaperone4php is a simple framework for writing unattended processes in PHP",
 	"keywords": ["framework", "cron", "script", "job", "task", "background"],
-	"homepage": "http://github.com/robertop/backend_project",
+	"homepage": "http://github.com/robertop/chaperone4php",
 	"license": "Apache version 2.0",
 
 	"authors": [
@@ -27,7 +27,7 @@
 	
 	"autoload": {
 		"psr-0": {
-			"BackendProject": "src/"
+			"Chaperone4php": "src/"
 		}
 	}
 }
