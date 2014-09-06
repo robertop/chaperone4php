@@ -1,3 +1,10 @@
+Project Roadmap
+=======
+
+1.0
+====
+
+chaperone4php 1.0 will contain the following features
 
 #pre-conditions#
 * low disk space
@@ -36,3 +43,4 @@
 
 #calling other processes#
 * exec, system calls record exit code
+
