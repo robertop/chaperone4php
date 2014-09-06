@@ -59,11 +59,13 @@ and run composer install.
 
 #FAQ#
 1. I already use the Symfony Console. Why should I use Chaperone4php?
+
    Symfony is tailored for web applications, while Chaperone4php is tailored 
    for background processes. Chaperone4php provides many features helpful for
    writing background processes that Symfony does not.
 
 2. How difficult is it to integrate Chaperone4php into my existing scripts?
+
    Chaperone4php is not an application container of any sort; it has no 
    bootstrapping other than requiring an autoloader which is already provided
    by Composer. Just start using the provided objects as desired! You can
