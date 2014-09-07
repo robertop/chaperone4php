@@ -23,8 +23,16 @@ namespace Chaperone4php\Pre;
  * can check whether there is enough space for it to do its
  * job.
  */
-class ReadableFilePreCondition extends PreCondition {
+class FreeDiskSpacePreCondition extends PreCondition {
 
+	/**
+	 * The number of free bytes that the volume must have so that the
+	 * check passes.
+	 *
+	 * @var float in bytes
+	 */
+	private $freeThreshold;
+	
 	/**
 	 * the path to check. It must be a directory.
 	 *
@@ -33,33 +41,25 @@ class ReadableFilePreCondition extends PreCondition {
 	private $directory;
 	
 	/**
-	 * The number of free bytes that the volume must have so that the
-	 * check passes.
 	 *
-	 * @var int in bytes
-	 */
-	private $freeThreshold;
-	
-	/**
-	 *
-	 * @param $directory string the path to check. It must be a directory
-	 *        where a volume is mounted onto (for example, '/')
 	 * @param float The number of free bytes that the volume must have so that 
 	 *        the check passes.
+	 * @param $directory string the path to check. It must be a directory
+	 *        where a volume is mounted onto (for example, '/')
 	 */
-	public function __construct($directory = '/', $freeThreshold) {
-		$this->directory = $directory;
+	public function __construct($freeThreshold, $directory = '/') {
 		$this->freeThreshold = $freeThreshold;
+		$this->directory = $directory;
 	}
 
 	/**
 	 * @return bool FALSE when
-	 *   - full path is a file and is not readable
-	 *   - full path is not a file
+	 *   - directory is not directory
+	 *   - the directory's volume contains less than the free threshold of
+	 *     bytes free.
 	 */
 	public function check() {
-		return is_file($this->fullPath) 
-			&& is_readable($this->fullPath)
-			&& disk_free_space($this->directory) >= $this->freeThreshold);
+		return is_dir($this->directory) 
+			&& disk_free_space($this->directory) >= $this->freeThreshold;
 	}
 }

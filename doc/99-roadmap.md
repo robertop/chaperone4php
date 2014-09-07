@@ -7,8 +7,8 @@ Project Roadmap
 chaperone4php 1.0 will contain the following features
 
 #pre-conditions#
-* low disk space
-* low memory available
+* (DONE) low disk space
+* (DONE) low memory available
 * (DONE) existance / writable directories
 * DB connectivity
 * network access
