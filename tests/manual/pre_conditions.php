@@ -24,7 +24,7 @@
 
 require_once(__DIR__ . '/../../vendor/autoload.php');
 
-$opts = getopt('d:m:h', array('disk:', 'memory:', 'help'));
+$opts = getopt('d:m:l:h', array('disk:', 'memory:', 'load:', 'help'));
 if (isset($opts['h']) || isset($opts['help'])) {
 	echo <<<HELP
 This file is a manual test that exercises precondition classes. It's 
@@ -42,7 +42,10 @@ Arguments:
 -d | --disk          Turn on disk threshold, use the given number as the 
                      threshold. Threshold is in bytes.
 -m | --memory        Turn on memory threshold, use the given number as the 
-                     threshold. Threshold is in bytes.					
+                     threshold. Threshold is in bytes.
+-l | --load          Turn on load average threshold, use the given number as
+                     the highest load average to tolerate. Threshold as a 
+					 float, where 1 == 1 CPU core is 100% utilized.
 -h | --help          Prints this help message
 
 
@@ -55,6 +58,8 @@ $diskThreshold = 0;
 $hasDiskThreshold = FALSE;
 $memoryThreshold = 0;
 $hasMemoryThreshold =  FALSE;
+$hasLoadThreshold = FALSE;
+$loadThreshold = 0;
 
 if (isset($opts['d'])) {
 	$diskThreshold = $opts['d']; 
@@ -72,22 +77,40 @@ if (isset($opts['memory'])) {
 	$memoryThreshold = $opts['memory'];
 	$hasMemoryThreshold = TRUE;
 }
+if (isset($opts['l'])) {
+	$loadThreshold = $opts['l'];
+	$hasLoadThreshold = TRUE;
+}
+if (isset($opts['load'])) {
+	$loadThreshold = $opts['load'];
+	$hasLoadThreshold = TRUE;
+}
 
-if ($hasDiskThreshold && !filter_var($diskThreshold, FILTER_VALIDATE_FLOAT)) {
+if ($hasDiskThreshold && 
+	filter_var($diskThreshold, FILTER_VALIDATE_FLOAT) <= 0) {
 	echo "Invalid value '{$diskThreshold}' for --disk argument.  " .
 		"It must be a number greater than zero.\n";
 	echo "See --help for details.\n\n";
 	exit(-1);
 }
 
-if ($hasMemoryThreshold && !filter_var($memoryThreshold, FILTER_VALIDATE_FLOAT)) {
+if ($hasMemoryThreshold && 
+	filter_var($memoryThreshold, FILTER_VALIDATE_FLOAT)  <= 0) {
 	echo "Invalid value '{$memoryThreshold}' for --memory argument.  " .
 		"It must be a number greater than zero.\n";
 	echo "See --help for details.\n\n";
 	exit(-1);
 }
 
-if (!$hasDiskThreshold && !$hasMemoryThreshold) {
+if ($hasLoadThreshold && 
+	filter_var($loadThreshold, FILTER_VALIDATE_FLOAT) <= 0) {
+	echo "Invalid value '{$loadThreshold}' for --load argument.  " .
+		"It must be a number greater than zero.\n";
+	echo "See --help for details.\n\n";
+	exit(-1);
+}
+
+if (!$hasDiskThreshold && !$hasMemoryThreshold && !$hasLoadThreshold) {
 	echo "You must give at least 1 pre-condition\n";
 	exit(-1);
 }
@@ -103,6 +126,11 @@ if ($hasDiskThreshold) {
 if ($hasMemoryThreshold) {
 	$allPreconditions []= new \Chaperone4php\Pre\FreeMemoryPreCondition(
 		$memoryThreshold
+	);
+}
+if ($hasLoadThreshold) {
+	$allPreconditions []= new \Chaperone4php\Pre\LoadAveragePreCondition(
+		$loadThreshold, \Chaperone4php\Pre\LoadAveragePreCondition::SAMPLE_01
 	);
 }
 

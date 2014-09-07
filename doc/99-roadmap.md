@@ -13,7 +13,7 @@ chaperone4php 1.0 will contain the following features
 * DB connectivity
 * network access
 * script instances (pid files)
-* load average
+* (DONE) load average
 
 #post-conditions#
 * warn on approach to memory_limit
