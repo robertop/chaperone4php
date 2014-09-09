@@ -10,9 +10,12 @@ chaperone4php 1.0 will contain the following features
 * (DONE) low disk space
 * (DONE) low memory available
 * (DONE) existance / writable directories
-* DB connectivity
-* network access
-* script instances (pid files)
+* (DONE) DB connectivity
+* (SKIP) network access - man page for ping states that ping should not be
+         used in automated scripts, and we don't want to do anything
+		 more specific like HTTP to a host's web root as that will also
+		 generate traffic.
+* (DONE) script instances (pid files)
 * (DONE) load average
 
 #post-conditions#

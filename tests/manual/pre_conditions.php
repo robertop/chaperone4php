@@ -24,7 +24,8 @@
 
 require_once(__DIR__ . '/../../vendor/autoload.php');
 
-$opts = getopt('d:m:l:h', array('disk:', 'memory:', 'load:', 'help'));
+$opts = getopt('d:m:l:ip:h', 
+	array('disk:', 'memory:', 'load:', 'instance', 'pidfile:', 'help'));
 if (isset($opts['h']) || isset($opts['help'])) {
 	echo <<<HELP
 This file is a manual test that exercises precondition classes. It's 
@@ -46,6 +47,10 @@ Arguments:
 -l | --load          Turn on load average threshold, use the given number as
                      the highest load average to tolerate. Threshold as a 
 					 float, where 1 == 1 CPU core is 100% utilized.
+-p | --pidfile       Turn on instance checking; if this flag is set then only
+                     only instance of this script will be allowed to run at the
+                     same time. The PID file is used to store the running script 
+                     PID. 
 -h | --help          Prints this help message
 
 
@@ -60,6 +65,8 @@ $memoryThreshold = 0;
 $hasMemoryThreshold =  FALSE;
 $hasLoadThreshold = FALSE;
 $loadThreshold = 0;
+$hasInstanceThreshold = FALSE;
+$pidFile = '';
 
 if (isset($opts['d'])) {
 	$diskThreshold = $opts['d']; 
@@ -84,6 +91,14 @@ if (isset($opts['l'])) {
 if (isset($opts['load'])) {
 	$loadThreshold = $opts['load'];
 	$hasLoadThreshold = TRUE;
+}
+if (isset($opts['p'])) {
+	$hasInstanceThreshold = TRUE;
+	$pidFile = $opts['p'];
+}
+if (isset($opts['pidfile'])) {
+	$hasInstanceThreshold = TRUE;
+	$pidFile = $opts['pidfile'];
 }
 
 if ($hasDiskThreshold && 
@@ -110,7 +125,8 @@ if ($hasLoadThreshold &&
 	exit(-1);
 }
 
-if (!$hasDiskThreshold && !$hasMemoryThreshold && !$hasLoadThreshold) {
+if (!$hasDiskThreshold && !$hasMemoryThreshold && !$hasLoadThreshold 
+	&& !$hasInstanceThreshold) {
 	echo "You must give at least 1 pre-condition\n";
 	exit(-1);
 }
@@ -133,6 +149,11 @@ if ($hasLoadThreshold) {
 		$loadThreshold, \Chaperone4php\Pre\LoadAveragePreCondition::SAMPLE_01
 	);
 }
+if ($hasInstanceThreshold) {
+	$allPreconditions []= new \Chaperone4php\Pre\InstancePreCondition(
+		$pidFile, $argv[0]
+	);
+}
 
 // now test each pre-condition
 $passedAll = TRUE;
@@ -145,5 +166,5 @@ foreach ($allPreconditions as $preCondition) {
 
 if ($passedAll) {
 	echo "All pre-conditions have passed.\n";
+	sleep(60);
 }
-
