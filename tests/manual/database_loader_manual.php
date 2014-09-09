@@ -130,6 +130,16 @@ if ($numberAdded < 0) {
 }
 else if ($numberAdded == 0) {
 	echo "data load failed. \n";
+	if ($pdo->errorCode() != '00:000') {
+		printf("PDO error: %s\n", $pdo->errorCode());
+		$info = $pdo->errorInfo();
+		if (isset($info[1])) {
+			printf("Error Code: %s\n", $info[1]);
+		}
+		if (isset($info[2])) {
+			printf("Error Message: %s\n", $info[2]);
+		}
+	}
 }
 else {
 	printf("generated and loaded data successfully. %s rows were added. " .
