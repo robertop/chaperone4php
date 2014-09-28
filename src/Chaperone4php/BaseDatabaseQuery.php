@@ -36,16 +36,7 @@ namespace Chaperone4php;
  * - Access result set values via the public properties of the sub-class object
  *
  * See docs/04-bulk-operations.md for more info.
- *
- * Notes about result set column binding:
- *
- * - the name of the column and the name of the PHP property must match exactly
- *   (case-sensitive)
- * - SQL column aliases are supported
- * - SQL fully qualified columns are supported; when used the PHP property
- *   must match the SQL (unqualified) column name
- * - If no columns could be bound (because no properties matched column names) 
- *   a PHP assertion will be triggered.
+ * See \Chaperone4php\ResultSetBinder to learn more about the binding mechanism.
  */
 class BaseDatabaseQuery {
 
@@ -73,6 +64,13 @@ class BaseDatabaseQuery {
 	private $queryParams;
 	
 	/**
+	 * Used to bind result set columns to properties on this object
+	 *
+	 * @var \Chaperone4php\ResultSetBinder
+	 */
+	private $binder;
+	
+	/**
 	 * Set the query to be execute and the parameters to bind to the 
 	 * statement. The rules for binding parameters are exactly the same as
 	 * those for PDO::prepare() and PDOStatement::execute(), see the PHP docs at 
@@ -87,28 +85,14 @@ class BaseDatabaseQuery {
 	public function initSql($sql, $queryParams) {
 		$this->sql = $sql;
 		$this->queryParams = $queryParams;
+		$this->binder = new \Chaperone4php\ResultSetBinder();
 	}
 
 	/**
 	 * Prepares the query to be executed, executes the query, and binds
 	 * columns of the result set to PHP variables. By default, columns
 	 * of the result set are bound to public members of this instance. 
-	 *
-	 * As an example, let's say you want to run this query:
-	 *
-	 * SELECT
-	 *    first_name, last_name, zip_code
-	 * FROM
-	 *    users u JOIN user_addresses a ON(u.user_id = a.user_id)
-	 *
-	 * When this method is executed, the result set bindings will be as 
-	 * follows:
-	 *
-	 * first_name ==> $this->first_name
-	 * last_name ==> $this->last_name
-	 * zip_code ==> $this->zip_code
-	 *
-	 * The properties MUST exist before this method is called.
+	 * See \Chaperone4php\ResultSetBinder for more info.
 	 *
 	 * The query can executed as an unbuffered query, but this will require 
 	 * that the MYSQL_ATTR_USE_BUFFERED_QUERY on the given PDO connection be
@@ -145,9 +129,11 @@ class BaseDatabaseQuery {
 			// according to PHP docs, we must call execute() before we
 			// bind the result set 
 			$queryParams = $this->queryParams;
+			
+			// TODO: how to bubble up statement errors
 			$success = $this->stmt->execute($queryParams);
 			if ($success) {
-				$this->bindColumns($sql);
+				$this->binder->bind($sql, $this->stmt, $this);
 			}
 		}
 		return $success;
@@ -188,93 +174,4 @@ class BaseDatabaseQuery {
 			$this->stmt = NULL;
 		}
 	}
-		
-	/**
-	 * The default, simple way of binding columns to this object.  The query
-	 * is parsed, and when a SELECT column has the same name as a property
-	 * name of this object, then that property will be bound to the column. 
-	 * Column aliases and fully qualified column names are taken into account.
-	 *
-	 * @param string $sql the SQL that is being executed
-	 */
-	protected function bindColumns($sql) {
-		$parser = new \PHPSQLParser\PHPSQLParser($sql);
-		$sqlTree = $parser->parsed;
-		$colNumber = 1;
-		if (isset($sqlTree['SELECT'])) {
-			
-			$columns = $sqlTree['SELECT'];
-			foreach ($columns as $col) {
-				$colName = '';
-				if (in_array($col['expr_type'], array('aggregate_function', 'function'))
-					&& isset($col['alias'], $col['alias']['as'], $col['alias']['name']) 
-					&& $col['alias']['as'] && FALSE === stripos($col['alias']['name'], "'")) {
-					
-					// an aggregate function, like " SUM(*) as s"
-					// these should have aliases; the alias is the property
-					// to bind to
-					// using 'parts' so that we get the alias without any
-					// single quotes
-					$colName = $col['alias']['name'];
-				}
-				else if (in_array($col['expr_type'], array('aggregate_function', 'function'))
-					&& isset($col['alias'],
-						$col['alias']['no_quotes']['parts'])
-					&& $col['alias']['no_quotes']['parts']) {
-					
-					// an aggregate function, like "SUM(*) 'total'"
-					// note the single quotes
-					// these should have aliases; the alias is the property
-					// to bind to
-					$colName = end($col['alias']['no_quotes']['parts']);
-				}
-				else if ($col['expr_type'] == 'colref' 
-					&& isset($col['alias'], $col['alias']['as']) 
-					&& FALSE === stripos($col['alias']['name'], "'")) {
-					
-					// an aliased column, ie. name as 'n'
-					$colName = $col['alias']['name'];
-				}
-				else if ($col['expr_type'] == 'colref'
-					&& isset($col['no_quotes'], $col['no_quotes']['parts'])) {
-					
-					// a fully qualified column name; a column name that has
-					// "parts" ie. table.col, parts are [table, col]
-					// this also handles quotes in aliases like
-					// "item_count as 'count' "
-					$colName = end($col['no_quotes']['parts']);
-				}
-				
-				else if ($col['expr_type'] == 'colref' 
-					&& isset($col['base_expr'])) {
-					
-					// a "no-frills" column
-					$colName = $col['base_expr'];
-				}
-				
-				if (property_exists($this, $colName)) {
-					$this->bindResultColumn($this->stmt, $colNumber, $colName);
-					$colNumber++;
-				}
-			}
-		}
-		assert('$colNumber > 1');
-	}
-	
-	/**
-	 * The default method of binding a SQL result column to a PHP variable.
-	 * The parameter will be bound as a string parameter.
-	 *
-	 * @param \PDOStatement $stmt the statement being executed
-	 * @param int $colNumber the index of the column in the SELECT clause. This
-	 *        number should be 1-based.
-	 * @param string $colName the name of the column, as it was in the SELECT
-	 *        clause
-	 */
-	protected function bindResultColumn(\PDOStatement $stmt, $colNumber, 
-			$colName) {
-		assert('property_exists($this, $colName)');
-		$stmt->bindColumn($colNumber, $this->{$colName});
-	}
-
 }

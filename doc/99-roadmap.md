@@ -25,7 +25,7 @@ chaperone4php 1.0 will contain the following features
 
 #bulk operations#
 * (DONE) bulk loading with low memory consumption
-* bulk loading with automatic record paging
+* (DONE) bulk loading with automatic record paging
 * (DONE) bulk saving
 * bulk HTTP calls (curl-multi)
 
